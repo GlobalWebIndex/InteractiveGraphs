@@ -24,7 +24,7 @@ It works in any HTML page or CMS, and its styles are sealed inside the tag so th
 Add this once to the site-wide footer code, not to every page or chart:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/GWI-GlobalWebIndex/InteractiveGraphs@1.5.0/gwi-chart.standalone.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/GlobalWebIndex/InteractiveGraphs@1.5.0/gwi-chart.standalone.js"></script>
 ```
 
 `@1.5.0` is a git tag. To roll out a new version, push the change, create a new tag (for example `1.5.1`) and change the number in that one line. Each chart is then a short `<gwi-chart>` tag in a code embed.
