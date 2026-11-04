@@ -16,6 +16,7 @@ It works in any HTML page or CMS, and its styles are sealed inside the tag so th
 | `gwi-chart.standalone.js` | **The file to put on a website.** Fonts are built in, so this one file is all a page needs. |
 | `index.html` | The template page: every chart type with its embed code to copy. It loads `gwi-chart.standalone.js` from the same folder, so it works on its own, for example on GitHub Pages. |
 | `source/gwi-chart.js` | The same component without built in fonts, and the one we edit. Loads Ovo and Instrument Sans from `source/fonts/`. Not needed on a website. |
+| `source/flags/` | The design system's circular Light Mode flags (55 countries), one SVG per country. `build-standalone.py` builds them into `gwi-chart.standalone.js`, so a page needs no extra files. Not in `source/gwi-chart.js`: flags only work in the standalone file. When `Components/Flags/Circular/SVG/` changes in the design system, copy the Light Mode files here (without the "Light Mode - " prefix) and rebuild. |
 | `source/fonts/` | Instrument Sans and Ovo as woff2. Only needed with `source/gwi-chart.js` and for the build. |
 | `source/build-standalone.py` | Rebuilds `gwi-chart.standalone.js` after `source/gwi-chart.js` changes. |
 
@@ -24,10 +25,10 @@ It works in any HTML page or CMS, and its styles are sealed inside the tag so th
 Add this once to the site-wide footer code, not to every page or chart:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/GlobalWebIndex/InteractiveGraphs@1.5.0/gwi-chart.standalone.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/GlobalWebIndex/InteractiveGraphs@1.6.0/gwi-chart.standalone.js"></script>
 ```
 
-`@1.5.0` is a git tag. To roll out a new version, push the change, create a new tag (for example `1.5.1`) and change the number in that one line. Each chart is then a short `<gwi-chart>` tag in a code embed.
+`@1.6.0` is a git tag. To roll out a new version, push the change, create a new tag (for example `1.6.1`) and change the number in that one line. Each chart is then a short `<gwi-chart>` tag in a code embed.
 
 ## Making a chart with Claude
 
@@ -140,7 +141,7 @@ at the bottom right: **Sources** then **Download image** (Download image is the 
 (the GWI Design System button spec): fully rounded pills, Light mode (charts sit on light backgrounds), no icon: Download image is Primary, Sources is Secondary. Charts use the compact size, 30px high with a 14px SemiBold label and 16px side padding, instead of the standard 60px. "Back to chart" on the card's back is a
 Primary, Light mode button at the same size. The two text links on the left are links, not buttons, and keep their underline style.
 
-- **Download image** saves a JPG of the chart as it looks on screen: title, subtitle, key, graph, and a line with the source and base. The buttons are left out. It is made in the browser, at twice the size, on a white background.
+- **Download image** saves a JPG of the chart as it looks on screen: title, subtitle, key, graph, and a line with the source and base. The buttons are left out. Values that the live chart only shows on hover (heatmap cells, stacked bar and stacked column segments) are printed in the picture, with their %. It is made in the browser, at twice the size, on a white background.
 - **Sources** flips the whole card over. The back shows the source, the base and the list of questions asked to get the data, each one a link to where it lives. "Back to chart" (or Escape) flips it back. The button only appears when there is something to show.
 
 Fill these in with attributes and keep them out of the data:
@@ -246,6 +247,8 @@ Each view holds the data for that chart type, in the same format as without a fi
 | `nav` | Draws previous and next arrows by the Download image button. Set automatically inside a carousel |
 | `normalize` | `false` on `stacked-bar` for absolute totals |
 | `animate` | `false` turns off the entrance animation. It is off automatically for people who prefer reduced motion |
+| `flags` | Adds the country flag next to a name that is a country: key entries, the filter drop-down, heatmap headers and row labels, and bar and stacked bar labels. Names are matched to the design system flag names, with `US`, `United States`, `United Kingdom`, `Great Britain` and a few other aliases. "Global" and any name without a flag stay text only. Flags are in the downloaded image too |
+| `download-views` | Charts with a filter (`views`): Download image saves one JPG per view, for example one per market, named after the title and the view. Without it, only the view on screen is saved. The browser may ask once to allow several downloads |
 | `table`, `download` | `false` hides the "View as table" or "Download data (CSV)" links. The Download image and Sources buttons always show (Sources only when there is something to show) |
 
 ## What the reader gets

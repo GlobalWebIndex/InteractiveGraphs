@@ -1,4 +1,4 @@
-/*! GWI interactive charts, v1.5.0. <gwi-chart> web component and <gwi-chart-carousel>. No dependencies.
+/*! GWI interactive charts, v1.6.0. <gwi-chart> web component and <gwi-chart-carousel>. No dependencies.
  *  Built from the GWI Design System 2026 data viz templates.
  *  Usage: load gwi-chart.js with a script tag, then  <gwi-chart type="bar" data='{...}'></gwi-chart>
  *  Docs: README.md next to this file. */
@@ -88,6 +88,20 @@
       '" text-anchor="' + (o.a || 'start') + '"' + (o.cls ? ' class="' + o.cls + '"' : '') + (o.attrs || '') + '>' + esc(s) + (o.kids || '') + '</text>';
   }
   function symW(kind) { return SYM[kind].w * SYMK; }
+  /* ---------- flags: the design system's circular flags (Light Mode), built into gwi-chart.standalone.js by build-standalone.py.
+   * Opt in with the flags attribute. A series, category or view whose name is a country (UK, USA, Singapore, ...) gets its flag; "Global" and unknown names get none. ---------- */
+  var FLAGSZ = 16, FLAGGAP = 8, FLAGW = FLAGSZ + FLAGGAP, flagCache = {}, flagKeys = null;
+  var FLAG_ALIAS = { 'us': 'usa', 'u.s.': 'usa', 'u.s.a.': 'usa', 'united states': 'usa', 'united states of america': 'usa', 'america': 'usa', 'gb': 'uk', 'u.k.': 'uk', 'united kingdom': 'uk', 'great britain': 'uk', 'britain': 'uk', 'england': 'uk', 'united arab emirates': 'uae', 'korea': 'south korea', 'republic of korea': 'south korea', 'czech republic': 'czechia', 'holland': 'netherlands', 'the netherlands': 'netherlands', 'türkiye': 'turkey', 'turkiye': 'turkey', 'hongkong': 'hong kong' };
+  function flagUri(name) {
+    var map = window.GwiChart && window.GwiChart.flags; if (!map) return null;
+    var k = String(name == null ? '' : name).replace(/\s+/g, ' ').trim().toLowerCase(); if (!k) return null;
+    if (flagCache[k] !== undefined) return flagCache[k];
+    if (!flagKeys) { flagKeys = {}; Object.keys(map).forEach(function (n) { flagKeys[n.toLowerCase()] = n; }); }
+    var canon = flagKeys[FLAG_ALIAS[k] || k];
+    return (flagCache[k] = canon ? 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(map[canon]) : null);
+  }
+  function flagImg(u, x, cy) { return u ? '<image href="' + u + '" x="' + r1(x) + '" y="' + r1(cy - FLAGSZ / 2) + '" width="' + FLAGSZ + '" height="' + FLAGSZ + '" pointer-events="none"/>' : ''; }
+  function flagTag(u, cls) { return u ? '<img class="' + (cls || 'gflag') + '" alt="" src="' + u + '">' : ''; }
   function symH(kind) { return SYM[kind].h * SYMK; }
   function sym(kind, cx, cy) { /* centered on (cx, cy) */
     var s = SYM[kind];
@@ -221,7 +235,7 @@
     S.vf = function (v) { return S.prefix + S.fmtN(v) + S.suffix + (S.pct ? '%' : ''); }; /* full: tooltips, table, aria */
     var asp = a.aspect || '4:3', am = /^(\d+(?:\.\d+)?)\s*[:\/]\s*(\d+(?:\.\d+)?)$/.exec(asp);
     S.targetH = (asp === 'auto' || !am || S.height) ? 0 : Math.round(W * (+am[2]) / (+am[1])); /* 4:3 by default, taller only when the data needs it */
-    S.highlight = a.highlight;
+    S.highlight = a.highlight; S.flags = el.hasAttribute('flags') && el.getAttribute('flags') !== 'false';
     S.dsColor = el.getAttribute('color'); S.dsTrack = el.getAttribute('track-color'); /* donut-stat: design system token names */
     S.normalize = a.normalize !== 'false';
     S.max = a.max ? +a.max : 0;
@@ -250,7 +264,7 @@
     var narrow = W < 520 || S.above, fs = 15, tips = [], svg = '';
     var rk = S.ranked && ns === 1, rkW = rk ? 36 : 0, barCols = ns === 1 && S.raw && Array.isArray(S.raw.colors) ? S.raw.colors : null;
     var ref = null; try { ref = S.refAttr ? JSON.parse(S.refAttr) : (S.raw && S.raw.reference); } catch (e) { ref = null; } if (ref && !(+ref.value > 0)) ref = null;
-    var maxLab = 0; d.cats.forEach(function (c, i) { String(d.catsRaw ? d.catsRaw[i] : c).split(/\n/).forEach(function (p) { maxLab = Math.max(maxLab, tw(p, fs, 500)); }); });
+    var maxLab = 0; d.cats.forEach(function (c, i) { String(d.catsRaw ? d.catsRaw[i] : c).split(/\n/).forEach(function (p) { maxLab = Math.max(maxLab, tw(p, fs, 500) + (S.flags && flagUri(p) ? FLAGW : 0)); }); });
     var lw = narrow ? 0 : Math.min(Math.ceil(maxLab) + rkW + 4, W * (rk ? 0.42 : 0.34));
     var vfs = ns === 1 ? 15 : 14, vw = 0; d.series.forEach(function (s) { s.values.forEach(function (v) { vw = Math.max(vw, tw(S.vs(v), vfs, 700)); }); }); vw = Math.ceil(vw);
     var top = S.pct ? Math.ceil(symH('top')) + (ns === 1 ? 0 : 10) : 2, labH = narrow ? 26 : 0, bh = ns === 1 ? 16 : 12, gp = 4, sep = ns === 1 ? 12 : 22, fixBh = S.barH > 0; if (fixBh) bh = S.barH;
@@ -276,11 +290,13 @@
       var catR = d.catsRaw ? d.catsRaw[i] : cat;
       if (narrow) {
         if (rk) rest += badge(12, rt + 11, i + 1);
-        if (aLines) aLines[i].forEach(function (ln, li) { rest += T(rkW, rt + 16 + li * 21, ln, { size: 16, w: 500 }); }); else rest += T(rkW, rt + 16, cat, { size: 14, w: 600 });
+        var bf = S.flags && !aLines ? flagUri(catR) : null;
+        if (aLines) aLines[i].forEach(function (ln, li) { rest += T(rkW, rt + 16 + li * 21, ln, { size: 16, w: 500 }); }); else rest += flagImg(bf, rkW, rt + 11) + T(rkW + (bf ? FLAGW : 0), rt + 16, cat, { size: 14, w: 600 });
       } else {
-        var lines = wrapText(catR, lw - rkW, fs, 500, 2), cy = y0 + gH / 2;
+        var bf2 = S.flags ? flagUri(catR) : null, bo = bf2 ? FLAGW : 0, lines = wrapText(catR, lw - rkW - bo, fs, 500, 2), cy = y0 + gH / 2;
         if (rk) rest += badge(12, cy, i + 1);
-        lines.forEach(function (ln, li) { rest += T(rkW, cy - (lines.length - 1) * 9 + li * 18 + 5, ln, { size: fs, w: 500 }); });
+        rest += flagImg(bf2, rkW, cy);
+        lines.forEach(function (ln, li) { rest += T(rkW + bo, cy - (lines.length - 1) * 9 + li * 18 + 5, ln, { size: fs, w: 500 }); });
       }
       for (k = 0; k < ns; k++) {
         var v = d.series[k].values[i], y = y0 + k * (bh + gp), c = cols[k], isHi = true;
@@ -369,7 +385,7 @@
 
   function buildStackedBar(d, S) {
     var W = S.W, ns = d.series.length, nc = d.cats.length, cols = colorsFor(d, S, 'stacked-bar').cols, tips = [], svg = '', fs = 15, A = S.anim;
-    var narrow = W < 520, maxLab = 0; d.cats.forEach(function (c) { maxLab = Math.max(maxLab, tw(c, fs, 500)); });
+    var narrow = W < 520, maxLab = 0; d.cats.forEach(function (c) { maxLab = Math.max(maxLab, tw(c, fs, 500) + (S.flags && flagUri(c) ? FLAGW : 0)); });
     var lw = narrow ? 0 : Math.min(Math.ceil(maxLab) + 4, W * 0.28), x0 = narrow ? 0 : lw + 20, bw = W - x0, labH = narrow ? 26 : 0, top = 2;
     var bh = narrow ? 32 : 38, sep = 6;
     function nat() { return top + (nc - 1) * (labH + bh + sep) + labH + bh + 2; }
@@ -381,7 +397,8 @@
     var fills = '', rest = '', clips = '';
     d.cats.forEach(function (cat, i) {
       var rt = top + i * pitch, y = rt + labH, x = x0, k, dl = i * 0.12;
-      if (narrow) rest += T(0, rt + 16, cat, { size: 14, w: 600 }); else rest += T(0, y + bh / 2 + 5, wrapText(cat, lw, fs, 500, 1)[0], { size: fs });
+      var sf = S.flags ? flagUri(cat) : null, so = sf ? FLAGW : 0;
+      if (narrow) rest += flagImg(sf, 0, rt + 11) + T(so, rt + 16, cat, { size: 14, w: 600 }); else rest += flagImg(sf, 0, y + bh / 2) + T(so, y + bh / 2 + 5, wrapText(cat, lw - so, fs, 500, 1)[0], { size: fs });
       var rowW = S.normalize ? bw : bw * totals[i] / maxT;
       clips += '<clipPath id="' + S.id + 'r' + i + '"><rect x="' + x0 + '" y="' + r1(y) + '" width="' + r1(rowW) + '" height="' + bh + '" rx="' + rx + '"/></clipPath>' + clipReveal(S.id + 'v' + i, x0, y - 2, rowW, bh + 4, 'x', A, dl);
       fills += '<g clip-path="url(#' + S.id + 'r' + i + ')"><g clip-path="url(#' + S.id + 'v' + i + ')">';
@@ -550,16 +567,16 @@
     d.series.forEach(function (s) { all = all.concat(s.values); });
     var mx = Math.max.apply(null, all), mn = Math.min.apply(null, all), span = (mx - mn) || 1;
     var minCell = 44; d.series.forEach(function (s) { s.name.split(/\s+/).forEach(function (wd) { minCell = Math.max(minCell, Math.ceil(tw(wd, 13, 600)) + 12); }); });
-    var rl0 = 0; d.cats.forEach(function (c) { rl0 = Math.max(rl0, tw(c, fs, 500)); }); rl0 = Math.min(Math.ceil(rl0) + 4, W * 0.24);
+    var rl0 = 0; d.cats.forEach(function (c) { rl0 = Math.max(rl0, tw(c, fs, 500) + (S.flags && flagUri(c) ? FLAGW : 0)); }); rl0 = Math.min(Math.ceil(rl0) + 4, W * 0.24);
     var needN = Math.ceil(rl0 + 18 + nc * minCell);
     if (W < needN && !S.noMin) return buildHeatmap(d, Object.assign({}, S, { W: needN, noMin: true, targetH: S.targetH ? S.targetH * needN / W : 0 }));
     var rlw = rl0, cx0 = rlw + 18, cellW = Math.max(minCell, (W - cx0) / nc), hdrH = 34, gap = 4, cellH = 44;
     if (S.targetH) { var avail = S.targetH - hdrH; cellH = clamp((avail + gap) / nr - gap, 44, Math.max(44, cellW * 1.25)); }
     var hd = '', cells = '';
-    d.series.forEach(function (s, j) { var hl = wrapText(s.name, cellW - 8, 13, 600, 2); hl.forEach(function (ln, li) { hd += T(cx0 + j * cellW + (cellW - gap) / 2, 13 - (hl.length - 1) * 8 + li * 16, ln, { size: 13, w: 600, a: 'middle' }); }); });
+    d.series.forEach(function (s, j) { var hl = wrapText(s.name, cellW - 8, 13, 600, 2), hx = cx0 + j * cellW + (cellW - gap) / 2, hf = S.flags && hl.length === 1 ? flagUri(s.name) : null; hl.forEach(function (ln, li) { if (hf) { var htot = FLAGW + tw(ln, 13, 600), hs = hx - htot / 2; hd += flagImg(hf, hs, 9) + T(hs + FLAGW, 13, ln, { size: 13, w: 600 }); } else hd += T(hx, 13 - (hl.length - 1) * 8 + li * 16, ln, { size: 13, w: 600, a: 'middle' }); }); });
     d.cats.forEach(function (cat, i) {
       var y = hdrH + i * (cellH + gap);
-      hd += T(0, y + cellH / 2 + 5, wrapText(cat, rlw, fs, 500, 1)[0], { size: fs });
+      var rf = S.flags ? flagUri(cat) : null; hd += flagImg(rf, 0, y + cellH / 2) + T(rf ? FLAGW : 0, y + cellH / 2 + 5, wrapText(cat, rlw - (rf ? FLAGW : 0), fs, 500, 1)[0], { size: fs });
       d.series.forEach(function (s, j) {
         var v = s.values[i], t = (v - mn) / span, fill = rampAt(t), ti = tips.length, x = cx0 + j * cellW, dl = (i + j) * 0.06, lab = S.vf(v);
         tips.push({ t: cat, rows: [{ c: fill, n: s.name, v: lab }], s: j });
@@ -952,6 +969,7 @@
     '.ddb:hover,.ddb:focus-visible{background:#fff}.ddb:focus-visible{outline:2px solid ' + C.ink + ';outline-offset:2px}',
     '.ddb .chev{width:7px;height:7px;margin:-3px 2px 0 0;border-right:1.6px solid ' + C.ink + ';border-bottom:1.6px solid ' + C.ink + ';transform:rotate(45deg);transition:transform .15s;flex:none}',
     '.ddb[aria-expanded=true] .chev{transform:rotate(-135deg);margin-top:3px}',
+    '.legend img.gflag{display:block;width:' + FLAGSZ + 'px;height:' + FLAGSZ + 'px;flex:none;margin-left:-2px}.ddf{width:' + FLAGSZ + 'px;height:' + FLAGSZ + 'px;vertical-align:-3px;margin-right:8px}',
     '.ddl{position:absolute;z-index:6;top:calc(100% + 6px);right:0;min-width:100%;margin:0;padding:0;list-style:none;background:#fff;border:1px solid ' + C.ink + ';border-radius:var(--gwi-radius,' + RAD + 'px);box-shadow:0 6px 20px rgba(30,27,26,.12);overflow:hidden;max-height:260px;overflow-y:auto}',
     '.ddl[hidden]{display:none}.keyrow.nolg .ddl{right:auto;left:0}',
     '.ddl li{background:#fff;padding:11px 14px;font-size:13px;font-weight:500;color:' + C.ink + ';white-space:nowrap;cursor:pointer;border-top:1px solid ' + C.grid + '}',
@@ -1079,7 +1097,7 @@
     return FONTS_READY;
   }
 
-  var ATTRS = ['type', 'data', 'src', 'title', 'subtitle', 'source', 'base', 'question', 'aspect', 'unit', 'highlight', 'decimals', 'height', 'max', 'normalize', 'animate', 'table', 'download', 'questions', 'question-url', 'source-url', 'ranked', 'reference', 'nav', 'filename', 'labels', 'layout', 'columns', 'color', 'track-color', 'background'];
+  var ATTRS = ['type', 'data', 'src', 'title', 'subtitle', 'source', 'base', 'question', 'aspect', 'unit', 'highlight', 'decimals', 'height', 'max', 'normalize', 'animate', 'table', 'download', 'flags', 'questions', 'question-url', 'source-url', 'ranked', 'reference', 'nav', 'filename', 'labels', 'layout', 'columns', 'color', 'track-color', 'background'];
 
   var GwiChart = class extends HTMLElement {
     static get observedAttributes() { return ATTRS; }
@@ -1186,8 +1204,8 @@
       var raw = this._eff(), d = (type === 'stat' || type === 'stats' || type === 'stat-bar') ? null : normalize(raw, type);
       var keyrow = this._q('.keyrow'), fdiv = this._q('.filter'), vs = this._views(), hasF = vs.length > 1;
       keyrow.classList.toggle('hasf', hasF);
-      if (hasF) { var self0 = this, lbl = (this._data.filterLabel || this._data.filter || 'Filter'), cur = vs[this._view].name;
-        fdiv.innerHTML = '<span class="fl">' + esc(lbl) + '</span><div class="dd"><button type="button" class="ddb" aria-haspopup="listbox" aria-expanded="false" aria-label="' + esc(lbl) + ': ' + esc(cur) + '"><span>' + esc(cur) + '</span><i class="chev"></i></button><ul class="ddl" role="listbox" tabindex="-1" hidden>' + vs.map(function (v, i) { return '<li role="option" tabindex="-1" data-i="' + i + '" aria-selected="' + (i === self0._view) + '">' + esc(v.name) + '</li>'; }).join('') + '</ul></div>';
+      if (hasF) { var self0 = this, fOn = this.hasAttribute('flags') && this.getAttribute('flags') !== 'false', lbl = (this._data.filterLabel || this._data.filter || 'Filter'), cur = vs[this._view].name;
+        fdiv.innerHTML = '<span class="fl">' + esc(lbl) + '</span><div class="dd"><button type="button" class="ddb" aria-haspopup="listbox" aria-expanded="false" aria-label="' + esc(lbl) + ': ' + esc(cur) + '"><span>' + (fOn ? flagTag(flagUri(cur), 'gflag ddf') : '') + esc(cur) + '</span><i class="chev"></i></button><ul class="ddl" role="listbox" tabindex="-1" hidden>' + vs.map(function (v, i) { return '<li role="option" tabindex="-1" data-i="' + i + '" aria-selected="' + (i === self0._view) + '">' + (fOn ? flagTag(flagUri(v.name), 'gflag ddf') : '') + esc(v.name) + '</li>'; }).join('') + '</ul></div>';
         var btn = fdiv.querySelector('.ddb'), ul = fdiv.querySelector('.ddl'), opts = [].slice.call(ul.children);
         var shut = function (back) { ul.hidden = true; btn.setAttribute('aria-expanded', 'false'); if (back) btn.focus(); };
         var open = function () { ul.hidden = false; btn.setAttribute('aria-expanded', 'true'); (opts[self0._view] || opts[0]).focus(); };
@@ -1216,7 +1234,7 @@
           '<div class="tablewrap sr" data-table></div>';
         this._buildTable(d, S, type);
         var lg = res.legend;
-        legend.innerHTML = !lg ? '' : lg.gradient ? '<li class="gr"><div class="pill" style="background:linear-gradient(90deg,' + lg.gradient.stops.join(',') + ')"></div><div class="gl">' + lg.gradient.labels.map(function (l) { return '<span>' + esc(l) + '</span>'; }).join('') + '</div></li>' : lg.items.map(function (it, i) { return '<li data-k="' + i + '"><i style="background:' + it[1] + '"></i>' + esc(it[0]) + '</li>'; }).join('');
+        legend.innerHTML = !lg ? '' : lg.gradient ? '<li class="gr"><div class="pill" style="background:linear-gradient(90deg,' + lg.gradient.stops.join(',') + ')"></div><div class="gl">' + lg.gradient.labels.map(function (l) { return '<span>' + esc(l) + '</span>'; }).join('') + '</div></li>' : lg.items.map(function (it, i) { return '<li data-k="' + i + '"><i style="background:' + it[1] + '"></i>' + (S.flags ? flagTag(flagUri(it[0])) : '') + esc(it[0]) + '</li>'; }).join('');
         legend.className = 'legend' + (lg && lg.align === 'end' ? ' end' : '') + (lg && lg.line ? ' line' : '') + (lg && lg.dot ? ' dot' : '');
         keyrow.classList.toggle('on', !!lg || hasF); keyrow.classList.toggle('nolg', !lg);
         legend.style.display = lg ? '' : 'none'; legend.style.paddingLeft = lg && lg.pad ? lg.pad + 'px' : '';
@@ -1457,13 +1475,25 @@
     }
     _jpg(force) {
       if (!force && !this.dispatchEvent(new CustomEvent('gwi-chart-download', { bubbles: true, composed: true, cancelable: true }))) return; /* a carousel can take over to save every graph */
-      var self = this, btn = this._q('[data-act="jpg"]'), front = this._q('.front'); if (!front) return;
+      var self = this, vs = this._views();
+      if (this.hasAttribute('download-views') && vs.length > 1 && !this._jpgBusy) { /* download-views: Download image saves one picture per view (for example one per market) */
+        var cur = this._view, ty = this._type, p = Promise.resolve(); this._jpgBusy = true;
+        vs.forEach(function (v, i) { p = p.then(function () { self._view = i; self._played = true; self._draw(ty, false); return self._jpg1(v.name, true); }).then(function () { return new Promise(function (r) { setTimeout(r, 350); }); }); });
+        return p.then(function () { self._view = cur; self._played = true; self._draw(ty, false); self._jpgBusy = false; self.dispatchEvent(new CustomEvent('gwi-chart-image', { bubbles: true, composed: true })); }, function () { self._view = cur; self._played = true; self._draw(ty, false); self._jpgBusy = false; });
+      }
+      return this._jpg1('', false);
+    }
+    _jpg1(suffix, quiet) {
+      var self = this, btn = this._q('[data-act="jpg"]'), front = this._q('.front'); if (!front) return Promise.resolve();
       this._hideTip();
       var a = this._attrs(), stage = this._q('.stage'), W = Math.max(Math.round(front.getBoundingClientRect().width), stage.scrollWidth), pad = 24;
       var c = front.cloneNode(true); c.className = 'front'; c.removeAttribute('inert'); c.removeAttribute('aria-hidden'); c.style.cssText = 'width:' + W + 'px';
       [].forEach.call(c.querySelectorAll('animate'), function (an_) { var p = an_.parentNode, at = an_.getAttribute('attributeName'); if (at) p.setAttribute(at, an_.getAttribute('to')); an_.remove(); }); /* show the end state, not the intro */
       [].forEach.call(c.querySelectorAll('.pre'), function (e) { e.classList.remove('pre'); e.classList.add('go'); });
-      [].forEach.call(c.querySelectorAll('.off,.on'), function (e) { e.classList.remove('off'); e.classList.remove('on'); });
+      [].forEach.call(c.querySelectorAll('.off,.on'), function (e) { if (e.classList.contains('keyrow')) return; e.classList.remove('off'); e.classList.remove('on'); }); /* the key row needs its .on to be shown */
+      if (/^(heatmap|stacked-bar|stacked-column|stacked-col)$/.test(String(this.getAttribute('type') || '').toLowerCase()) && this._res && this._res.tips) { /* the picture prints the values that the live chart only shows on hover */
+        var tps = this._res.tips; [].forEach.call(c.querySelectorAll('svg.chart .rv'), function (e) { var t = tps[+e.getAttribute('data-m')]; if (t && t.rows && t.rows[0]) e.textContent = t.rows[0].v; e.style.opacity = '1'; e.classList.add('on'); });
+      }
       [].forEach.call(c.querySelectorAll('[data-final]'), function (e) { e.textContent = e.getAttribute('data-final'); }); /* big numbers: the final figure, not mid count */
       var ssel = c.querySelector('.subsel'); if (ssel) { var sp = document.createElement('p'); sp.className = 'sub'; sp.textContent = (this._sel && this._sel.items[this._sel.index]) || a.subtitle || ''; ssel.replaceWith(sp); } /* the picture shows the subtitle, not the selector */
       var st = c.querySelector('.stage'); if (st) { st.style.overflow = 'visible'; st.classList.remove('scroll'); }
@@ -1473,7 +1503,7 @@
       if (info.source) parts.push('<span><b>Source:</b> ' + esc(info.source) + '</span>'); if (info.base) parts.push('<span><b>Base:</b> ' + esc(info.base) + '</span>');
       var ft = c.querySelector('.foot'); if (ft) { ft.innerHTML = parts.length ? '<p class="notes">' + parts.join(' <i class="dot">•</i> ') + '</p>' : ''; if (!parts.length) ft.style.display = 'none'; }
       if (btn) btn.disabled = true;
-      this._fontData().then(function (fontCss) {
+      return this._fontData().then(function (fontCss) {
         var holder = document.createElement('div'); holder.className = 'xhost'; holder.style.cssText = 'width:' + (W + pad * 2) + 'px;padding:' + pad + 'px;box-sizing:border-box;background:#fff'; var hcs = getComputedStyle(self); VARNAMES.forEach(function (n) { var val = hcs.getPropertyValue(n).trim(); if (val) holder.style.setProperty(n, val); }); /* the picture keeps the inline styling */
         var style = document.createElement('style'); style.textContent = fontCss + CSS.replace(/:host\(\[hidden\]\)/g, '.xhost[hidden]').replace(/:host/g, '.xhost'); holder.appendChild(style);
         var wrap = document.createElement('div'); wrap.className = 'wrap'; wrap.appendChild(c); holder.appendChild(wrap);
@@ -1491,13 +1521,14 @@
       }).then(function (r) {
         var img = r[0], W2 = r[1], H = r[2], k = Math.min(2, 8000 / Math.max(W2, H)), cv = document.createElement('canvas'); cv.width = Math.round(W2 * k); cv.height = Math.round(H * k);
         var cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(img, 0, 0, cv.width, cv.height);
-        cv.toBlob(function (b) {
-          if (!b) { if (btn) btn.disabled = false; return; }
+        return new Promise(function (done) { cv.toBlob(function (b) {
+          if (!b) { if (btn) btn.disabled = false; done(); return; }
           var url = URL.createObjectURL(b), l = document.createElement('a'); l.href = url;
-          l.download = ((a.filename || a.title || 'gwi-chart').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'gwi-chart') + '.jpg';
+          l.download = (((a.filename || a.title || 'gwi-chart') + (suffix ? ' ' + suffix : '')).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'gwi-chart') + '.jpg';
           self._root.appendChild(l); l.click(); l.remove(); setTimeout(function () { URL.revokeObjectURL(url); }, 1000); if (btn) btn.disabled = false;
-          self.dispatchEvent(new CustomEvent('gwi-chart-image', { bubbles: true, composed: true }));
-        }, 'image/jpeg', 0.92);
+          if (!quiet) self.dispatchEvent(new CustomEvent('gwi-chart-image', { bubbles: true, composed: true }));
+          done();
+        }, 'image/jpeg', 0.92); });
       }).catch(function () { if (btn) btn.disabled = false; self.dispatchEvent(new CustomEvent('gwi-chart-error', { detail: { message: 'Could not create the image.' }, bubbles: true, composed: true })); });
     }
     _csv() {

@@ -43,7 +43,7 @@ footer pre{background:#1E1B1A;color:#F9F7F6;padding:20px 24px;border-radius:12px
 .picker{display:flex;flex-wrap:wrap;gap:10px 20px;margin:28px 0 14px;font-size:13px}.picker label{display:flex;align-items:center;gap:8px;color:var(--muted)}.picker select{font:inherit;font-size:13px;color:#282523;background:#fff;border:1px solid #D4D0CE;border-radius:999px;padding:6px 12px}
 </style></head><body>
 <header><div class="eyebrow">V1.3 - GWI October 2026</div><h1>Interactive charts template</h1></header>
-<nav class="toc" aria-label="Chart types"><a href="#stat">Big number and tiles</a><a href="#bar-highlight">Bar, highlighted</a><a href="#bar-single">Bar, one series</a><a href="#bar-single-above">Bar, statement above</a><a href="#bar-grouped">Bar, grouped</a><a href="#column">Column</a><a href="#column-single">Column, one series</a><a href="#column-wide">Column, wide</a><a href="#line">Line</a><a href="#area">Area</a><a href="#stacked-area">Stacked area</a><a href="#stacked-bar">Stacked bar</a><a href="#stacked-column">Stacked column</a><a href="#heatmap">Heatmap</a><a href="#treemap">Treemap</a><a href="#treemap-square">Treemap, in order</a><a href="#sankey">Sankey</a><a href="#filter">Market filter</a><a href="#scatter">Scatter plot</a><a href="#dot-plot">Dot plot</a><a href="#slope">Slope</a><a href="#half-donut">Half donut</a><a href="#inline-donut">Inline insight, half donut</a><a href="#inline-dots">Inline insight, dot matrix</a><a href="#stats">Big numbers</a><a href="#stat-bar">Big number bar</a><a href="#bar-ranked">Bar, ranked</a><a href="#bar-groups">Bar, in groups</a><a href="#bar-groups-above">Bar, in groups, statement above</a><a href="#carousel">Charts with arrows</a><a href="#carousel-selector">Charts with a selector</a><a href="#styling">Inline styling</a></nav>
+<nav class="toc" aria-label="Chart types"><a href="#stat">Big number and tiles</a><a href="#bar-highlight">Bar, highlighted</a><a href="#bar-single">Bar, one series</a><a href="#bar-single-above">Bar, statement above</a><a href="#bar-grouped">Bar, grouped</a><a href="#column">Column</a><a href="#column-single">Column, one series</a><a href="#column-wide">Column, wide</a><a href="#line">Line</a><a href="#area">Area</a><a href="#stacked-area">Stacked area</a><a href="#stacked-bar">Stacked bar</a><a href="#stacked-column">Stacked column</a><a href="#heatmap">Heatmap</a><a href="#treemap">Treemap</a><a href="#treemap-square">Treemap, in order</a><a href="#sankey">Sankey</a><a href="#filter">Market filter</a><a href="#flags-bar">Flags, grouped bar</a><a href="#flags-heatmap">Flags, heatmap</a><a href="#flags-stacked-bar">Flags, stacked bar</a><a href="#scatter">Scatter plot</a><a href="#dot-plot">Dot plot</a><a href="#slope">Slope</a><a href="#half-donut">Half donut</a><a href="#inline-donut">Inline insight, half donut</a><a href="#inline-dots">Inline insight, dot matrix</a><a href="#stats">Big numbers</a><a href="#stat-bar">Big number bar</a><a href="#bar-ranked">Bar, ranked</a><a href="#bar-groups">Bar, in groups</a><a href="#bar-groups-above">Bar, in groups, statement above</a><a href="#carousel">Charts with arrows</a><a href="#carousel-selector">Charts with a selector</a><a href="#styling">Inline styling</a></nav>
 <section class="howto" id="how-to"><h2>How to make a chart with Claude</h2>
 <ol>
 <li><b>Pick a chart.</b> Choose the type you want from the gallery below and note its name, for example "Bar, grouped" or "Slope".</li>
@@ -971,8 +971,8 @@ footer pre{background:#1E1B1A;color:#F9F7F6;padding:20px 24px;border-radius:12px
   }
   &lt;/script&gt;
 &lt;/gwi-chart&gt;</code></pre></div></details></section>
-<section id="filter"><div class="demo"><div class="eyebrow">Market filter</div><gwi-chart type="bar" unit="%" title="Online shopping is strongest in the UK, whichever market you pick" subtitle="This is a placeholder subtitle, please change accordingly" source="Illustrative data, not real GWI figures" base="Online adults 16 to 64" source-url="https://example.com/core" question="Q4. Which of the following do you use weekly?" question-url="https://example.com/q4"><script type="application/json">{"filterLabel": "Market", "views": [{"name": "United Kingdom", "categories": ["Prefer to shop online", "Research before I buy", "Follow brands on social media", "Switch brands for a better deal", "Trust brands that share my values"], "series": [{"name": "Millennials", "values": [77, 70, 70, 69, 68]}]}, {"name": "United States", "categories": ["Prefer to shop online", "Research before I buy", "Follow brands on social media", "Switch brands for a better deal", "Trust brands that share my values"], "series": [{"name": "Millennials", "values": [65, 60, 60, 59, 58]}]}, {"name": "Germany", "categories": ["Prefer to shop online", "Research before I buy", "Follow brands on social media", "Switch brands for a better deal", "Trust brands that share my values"], "series": [{"name": "Millennials", "values": [54, 49, 50, 49, 49]}]}]}</script></gwi-chart></div>
-<details><summary>Embed code</summary><p class="note">Webflow: paste only the <code>&lt;gwi-chart&gt;</code> tag below into a Code Embed. Keep the data script inside it, but do not add a script that loads the component. The site already does that.</p><div class="code"><button class="copy" type="button">Copy</button><pre><code>&lt;gwi-chart type=&quot;bar&quot; unit=&quot;%&quot;
+<section id="filter"><div class="demo"><div class="eyebrow">Market filter</div><gwi-chart type="bar" unit="%" flags title="Online shopping is strongest in the UK, whichever market you pick" subtitle="This is a placeholder subtitle, please change accordingly" source="Illustrative data, not real GWI figures" base="Online adults 16 to 64" source-url="https://example.com/core" question="Q4. Which of the following do you use weekly?" question-url="https://example.com/q4"><script type="application/json">{"filterLabel": "Market", "views": [{"name": "United Kingdom", "categories": ["Prefer to shop online", "Research before I buy", "Follow brands on social media", "Switch brands for a better deal", "Trust brands that share my values"], "series": [{"name": "Millennials", "values": [77, 70, 70, 69, 68]}]}, {"name": "United States", "categories": ["Prefer to shop online", "Research before I buy", "Follow brands on social media", "Switch brands for a better deal", "Trust brands that share my values"], "series": [{"name": "Millennials", "values": [65, 60, 60, 59, 58]}]}, {"name": "Germany", "categories": ["Prefer to shop online", "Research before I buy", "Follow brands on social media", "Switch brands for a better deal", "Trust brands that share my values"], "series": [{"name": "Millennials", "values": [54, 49, 50, 49, 49]}]}]}</script></gwi-chart></div>
+<details><summary>Embed code</summary><p class="note">Webflow: paste only the <code>&lt;gwi-chart&gt;</code> tag below into a Code Embed. Keep the data script inside it, but do not add a script that loads the component. The site already does that.</p><div class="code"><button class="copy" type="button">Copy</button><pre><code>&lt;gwi-chart type=&quot;bar&quot; unit=&quot;%&quot; flags
   title=&quot;This is the title, please change accordingly&quot;
   subtitle=&quot;This is a placeholder subtitle, please change accordingly&quot;
   source=&quot;GWI Core, Q2 2026&quot;
@@ -1048,6 +1048,206 @@ footer pre{background:#1E1B1A;color:#F9F7F6;padding:20px 24px;border-radius:12px
               49
             ]
           }
+        ]
+      }
+    ]
+  }
+  &lt;/script&gt;
+&lt;/gwi-chart&gt;</code></pre></div></details></section>
+<section id="flags-bar"><div class="demo"><div class="eyebrow">Flags, grouped bar</div><gwi-chart type="bar" unit="%" flags title="Attitudes to online shopping differ by market" subtitle="This is a placeholder subtitle, please change accordingly" source="Illustrative data, not real GWI figures" base="Online adults 16 to 64" source-url="https://example.com/core" question="Q4. Which of the following do you use weekly?" question-url="https://example.com/q4"><script type="application/json">{"categories": ["Prefer to shop online", "Research before I buy", "Follow brands on social media", "Switch brands for a better deal"], "series": [{"name": "UK", "values": [77, 70, 70, 69]}, {"name": "USA", "values": [65, 60, 60, 59]}, {"name": "Germany", "values": [54, 49, 50, 49]}, {"name": "Singapore", "values": [72, 66, 63, 61]}]}</script></gwi-chart></div>
+<details><summary>Embed code</summary><p class="note">Add <code>flags</code> and a name that is a country (UK, USA, Singapore, Germany ...) gets its design system flag. Names without a flag, such as Global, stay text only. Webflow: paste only the <code>&lt;gwi-chart&gt;</code> tag, never a script that loads the component.</p><div class="code"><button class="copy" type="button">Copy</button><pre><code>&lt;gwi-chart type=&quot;bar&quot;
+  unit=&quot;%&quot;
+  flags
+  title=&quot;This is the title, please change accordingly&quot;
+  subtitle=&quot;This is a placeholder subtitle, please change accordingly&quot;
+  source=&quot;GWI Core, Q2 2026&quot;
+  base=&quot;Online adults 16 to 64&quot;
+  source-url=&quot;https://example.com/core&quot;
+  question=&quot;Q4. Which of the following do you use weekly?&quot;
+  question-url=&quot;https://example.com/q4&quot;&gt;
+  &lt;script type=&quot;application/json&quot;&gt;
+  {
+    &quot;categories&quot;: [
+      &quot;Prefer to shop online&quot;,
+      &quot;Research before I buy&quot;,
+      &quot;Follow brands on social media&quot;,
+      &quot;Switch brands for a better deal&quot;
+    ],
+    &quot;series&quot;: [
+      {
+        &quot;name&quot;: &quot;UK&quot;,
+        &quot;values&quot;: [
+          77,
+          70,
+          70,
+          69
+        ]
+      },
+      {
+        &quot;name&quot;: &quot;USA&quot;,
+        &quot;values&quot;: [
+          65,
+          60,
+          60,
+          59
+        ]
+      },
+      {
+        &quot;name&quot;: &quot;Germany&quot;,
+        &quot;values&quot;: [
+          54,
+          49,
+          50,
+          49
+        ]
+      },
+      {
+        &quot;name&quot;: &quot;Singapore&quot;,
+        &quot;values&quot;: [
+          72,
+          66,
+          63,
+          61
+        ]
+      }
+    ]
+  }
+  &lt;/script&gt;
+&lt;/gwi-chart&gt;</code></pre></div></details></section>
+<section id="flags-heatmap"><div class="demo"><div class="eyebrow">Flags, heatmap</div><gwi-chart type="heatmap" unit="%" flags title="Weekly media use varies by market" subtitle="This is a placeholder subtitle, please change accordingly" source="Illustrative data, not real GWI figures" base="Online adults 16 to 64" source-url="https://example.com/core" question="Q4. Which of the following do you use weekly?" question-url="https://example.com/q4"><script type="application/json">{"categories": ["Short-form video", "Social networks", "Messaging", "Streaming", "Podcasts"], "series": [{"name": "Global", "values": [82, 74, 69, 61, 28]}, {"name": "UK", "values": [79, 71, 66, 64, 25]}, {"name": "USA", "values": [84, 76, 70, 68, 34]}, {"name": "Germany", "values": [70, 62, 72, 55, 22]}, {"name": "Singapore", "values": [88, 81, 79, 66, 31]}]}</script></gwi-chart></div>
+<details><summary>Embed code</summary><p class="note">Add <code>flags</code> and a name that is a country (UK, USA, Singapore, Germany ...) gets its design system flag. Names without a flag, such as Global, stay text only. Webflow: paste only the <code>&lt;gwi-chart&gt;</code> tag, never a script that loads the component.</p><div class="code"><button class="copy" type="button">Copy</button><pre><code>&lt;gwi-chart type=&quot;heatmap&quot;
+  unit=&quot;%&quot;
+  flags
+  title=&quot;This is the title, please change accordingly&quot;
+  subtitle=&quot;This is a placeholder subtitle, please change accordingly&quot;
+  source=&quot;GWI Core, Q2 2026&quot;
+  base=&quot;Online adults 16 to 64&quot;
+  source-url=&quot;https://example.com/core&quot;
+  question=&quot;Q4. Which of the following do you use weekly?&quot;
+  question-url=&quot;https://example.com/q4&quot;&gt;
+  &lt;script type=&quot;application/json&quot;&gt;
+  {
+    &quot;categories&quot;: [
+      &quot;Short-form video&quot;,
+      &quot;Social networks&quot;,
+      &quot;Messaging&quot;,
+      &quot;Streaming&quot;,
+      &quot;Podcasts&quot;
+    ],
+    &quot;series&quot;: [
+      {
+        &quot;name&quot;: &quot;Global&quot;,
+        &quot;values&quot;: [
+          82,
+          74,
+          69,
+          61,
+          28
+        ]
+      },
+      {
+        &quot;name&quot;: &quot;UK&quot;,
+        &quot;values&quot;: [
+          79,
+          71,
+          66,
+          64,
+          25
+        ]
+      },
+      {
+        &quot;name&quot;: &quot;USA&quot;,
+        &quot;values&quot;: [
+          84,
+          76,
+          70,
+          68,
+          34
+        ]
+      },
+      {
+        &quot;name&quot;: &quot;Germany&quot;,
+        &quot;values&quot;: [
+          70,
+          62,
+          72,
+          55,
+          22
+        ]
+      },
+      {
+        &quot;name&quot;: &quot;Singapore&quot;,
+        &quot;values&quot;: [
+          88,
+          81,
+          79,
+          66,
+          31
+        ]
+      }
+    ]
+  }
+  &lt;/script&gt;
+&lt;/gwi-chart&gt;</code></pre></div></details></section>
+<section id="flags-stacked-bar"><div class="demo"><div class="eyebrow">Flags, stacked bar</div><gwi-chart type="stacked-bar" unit="%" flags title="Where each market finds new brands" subtitle="This is a placeholder subtitle, please change accordingly" source="Illustrative data, not real GWI figures" base="Online adults 16 to 64" source-url="https://example.com/core" question="Q4. Which of the following do you use weekly?" question-url="https://example.com/q4"><script type="application/json">{"categories": ["Global", "UK", "USA", "Germany", "Singapore"], "series": [{"name": "Social media", "values": [34, 31, 38, 26, 41]}, {"name": "Search", "values": [27, 30, 24, 35, 22]}, {"name": "Streaming", "values": [22, 23, 21, 20, 23]}, {"name": "Other", "values": [17, 16, 17, 19, 14]}]}</script></gwi-chart></div>
+<details><summary>Embed code</summary><p class="note">Add <code>flags</code> and a name that is a country (UK, USA, Singapore, Germany ...) gets its design system flag. Names without a flag, such as Global, stay text only. Webflow: paste only the <code>&lt;gwi-chart&gt;</code> tag, never a script that loads the component.</p><div class="code"><button class="copy" type="button">Copy</button><pre><code>&lt;gwi-chart type=&quot;stacked-bar&quot;
+  unit=&quot;%&quot;
+  flags
+  title=&quot;This is the title, please change accordingly&quot;
+  subtitle=&quot;This is a placeholder subtitle, please change accordingly&quot;
+  source=&quot;GWI Core, Q2 2026&quot;
+  base=&quot;Online adults 16 to 64&quot;
+  source-url=&quot;https://example.com/core&quot;
+  question=&quot;Q4. Which of the following do you use weekly?&quot;
+  question-url=&quot;https://example.com/q4&quot;&gt;
+  &lt;script type=&quot;application/json&quot;&gt;
+  {
+    &quot;categories&quot;: [
+      &quot;Global&quot;,
+      &quot;UK&quot;,
+      &quot;USA&quot;,
+      &quot;Germany&quot;,
+      &quot;Singapore&quot;
+    ],
+    &quot;series&quot;: [
+      {
+        &quot;name&quot;: &quot;Social media&quot;,
+        &quot;values&quot;: [
+          34,
+          31,
+          38,
+          26,
+          41
+        ]
+      },
+      {
+        &quot;name&quot;: &quot;Search&quot;,
+        &quot;values&quot;: [
+          27,
+          30,
+          24,
+          35,
+          22
+        ]
+      },
+      {
+        &quot;name&quot;: &quot;Streaming&quot;,
+        &quot;values&quot;: [
+          22,
+          23,
+          21,
+          20,
+          23
+        ]
+      },
+      {
+        &quot;name&quot;: &quot;Other&quot;,
+        &quot;values&quot;: [
+          17,
+          16,
+          17,
+          19,
+          14
         ]
       }
     ]
@@ -1663,7 +1863,7 @@ footer pre{background:#1E1B1A;color:#F9F7F6;padding:20px 24px;border-radius:12px
 
 <footer><h2>Put a chart on a page</h2>
 <pre><code>&lt;!-- Load the component once per site or page. In Webflow this goes in the site-wide footer custom code, not in each embed. --&gt;
-&lt;script src="https://cdn.jsdelivr.net/gh/GlobalWebIndex/InteractiveGraphs@1.5.0/gwi-chart.standalone.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdn.jsdelivr.net/gh/GlobalWebIndex/InteractiveGraphs@1.6.0/gwi-chart.standalone.js"&gt;&lt;/script&gt;
 
 &lt;gwi-chart type="bar" unit="%" title="Short-form video leads"
   subtitle="Share of online adults who use each weekly"
