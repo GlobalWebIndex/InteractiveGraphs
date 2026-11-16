@@ -25,10 +25,10 @@ It works in any HTML page or CMS, and its styles are sealed inside the tag so th
 Add this once to the site-wide footer code, not to every page or chart:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/GlobalWebIndex/InteractiveGraphs@1.6.0/gwi-chart.standalone.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/GlobalWebIndex/InteractiveGraphs@1.7.0/gwi-chart.standalone.js"></script>
 ```
 
-`@1.6.0` is a git tag. To roll out a new version, push the change, create a new tag (for example `1.6.1`) and change the number in that one line. Each chart is then a short `<gwi-chart>` tag in a code embed.
+`@1.7.0` is a git tag. To roll out a new version, push the change, create a new tag (for example `1.7.1`) and change the number in that one line. Each chart is then a short `<gwi-chart>` tag in a code embed.
 
 ## Making a chart with Claude
 
@@ -204,7 +204,7 @@ Each view holds the data for that chart type, in the same format as without a fi
 | `stat` | One hero number with supporting tiles | value, label, tiles | The number counts up when scrolled into view |
 | `stats` | Big numbers with a statement under each, no chart | `{"stats":[{"value":77,"label":"..."}]}` | Ovo numbers count up, a small % beside each when `unit="%"`. Two columns, one on narrow screens (`--gwi-stats-cols`) |
 | `stat-bar` | One tall bar that stretches from one big stat to the next, then loops | `{"stats":[{"value":80,"label":"...","mark":"*"}],"interval":3,"notes":["..."]}` | `mark` is a small superscript, `notes` print under the bar. Starts when scrolled into view |
-| `bar` | Comparing values | categories and series | One series: pink. Several series: grouped, up to four. Also: `labels="above"` puts each statement above a full-width bar, `ranked` adds numbered badges, `reference` draws a dotted line (for example the 50% Majority line), `"colors":[...]` in the data colours each bar, and `{"groups":[{"name","items":[{"name","value"}]}]}` draws bars in switchable groups. A `\n` in a label forces a line break Add `highlight="Name"` or an index to make one bar pink and the rest grey |
+| `bar` | Comparing values | categories and series | One series: pink. Several series: grouped, up to six. Also: `labels="above"` puts each statement above a full-width bar, `ranked` adds numbered badges, `reference` draws a dotted line (for example the 50% Majority line), `"colors":[...]` in the data colours each bar, and `{"groups":[{"name","items":[{"name","value"}]}]}` draws bars in switchable groups. A `\n` in a label forces a line break Add `highlight="Name"` or an index to make one bar pink and the rest grey |
 | `column` | Comparing groups across statements | categories and series | Scrolls sideways on very narrow screens |
 | `line` | Change over time | categories (years) and series | Smooth curves, an end dot per line, values on hover. Shorter than the default shape (about 16:9 plot) on line, area and stacked area |
 | `area` | Volume over time, one series | categories and one series | Pink, curved, with vertical grid lines |
@@ -286,7 +286,7 @@ All are optional. Nothing changes if you set none.
 | Variable | What it changes | Default |
 |---|---|---|
 | `--gwi-pink` | Primary data colour: bars, columns, big numbers, badges, treemap top tile | #FF0077 |
-| `--gwi-lime`, `--gwi-deep`, `--gwi-dlime`, `--gwi-grey` | Other series colours | #B9DB51, #940045, #729508, #B0ACAA |
+| `--gwi-lime`, `--gwi-deep`, `--gwi-dlime`, `--gwi-orange`, `--gwi-dorange`, `--gwi-grey` | Other series colours | #B9DB51, #940045, #729508, #FD9647, #D5661B, #B0ACAA |
 | `--gwi-ramp-1` … `--gwi-ramp-9` | Pink ramp used by treemap, donut and heatmap (7 is `--gwi-pink`) | Pink 10 to Pink 90 |
 | `--gwi-ink`, `--gwi-ink-strong` | Text, axis ink, outlines, button text | #282523, #1E1B1A |
 | `--gwi-muted`, `--gwi-soft` | Subtitle and secondary text | #7F7B79, #9C9896 |
@@ -317,8 +317,9 @@ The tag fires `gwi-chart-ready`, `gwi-chart-error` (with `detail.message`) and `
 
 You cannot get these wrong, because the component enforces them. Do not try to override them.
 
-- **Colours** follow the GWI Design System colour usage rules. One series: pink, with grey as context. Two: pink, lime.
-  Three: deep pink, pink, lime. Four: deep pink, pink, lime, dark lime. Five or more: the pink magnitude ramp.
+- **Colours** follow the GWI Design System colour usage rules. One series: pink (#FF0077), with grey as context.
+  Two or more series: deep pink #940045, pink #FF0077, dark lime #729508, lime #B9DB51, dark orange #D5661B, orange #FD9647, in that order.
+  Beyond six series the colours repeat.
   Series keep their colour in every chart and are never reordered.
 - **Marks** have a 6px corner radius (bars, columns, stacked segments, cells and tiles alike, never fully rounded), light grey tracks, and white gaps between touching segments. Single series bar charts have no separator lines. Grouped bars and columns have a light grey separator line between the groups, never between the bars.
 - **Numbers** are plain, in the series colour. The `%` shows once, as the Top, Side or Diagonal symbol from

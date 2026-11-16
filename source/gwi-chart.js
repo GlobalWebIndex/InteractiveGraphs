@@ -9,11 +9,11 @@
   var SCRIPT_SRC = (document.currentScript && document.currentScript.src) || '';
 
   /* ---------- tokens (GWI Design System colour tokens: dataviz and neutral) ---------- */
-  var C = { pink: '#FF0077', lime: '#B9DB51', deep: '#940045', dlime: '#729508', grey: '#B0ACAA',
+  var C = { pink: '#FF0077', lime: '#B9DB51', deep: '#940045', dlime: '#729508', orange: '#FD9647', dorange: '#D5661B', grey: '#B0ACAA',
     ink: '#282523', ink100: '#1E1B1A', muted: '#7F7B79', soft: '#9C9896', grid: '#E8E5E3', track: '#F9F7F6', axis: '#D4D0CE', white: '#FFFFFF' };
-  var SETS = { 1: [C.pink], 2: [C.pink, C.lime], 3: [C.deep, C.pink, C.lime], 4: [C.deep, C.pink, C.lime, C.dlime] };
+  var SEQ = [C.deep, C.pink, C.dlime, C.lime, C.dorange, C.orange]; /* two or more series: this order (Data/1 to Data/6). One series: pink */
   var MAG = ['#FFE8EE', '#FFD2DF', '#FFBACE', '#FF9FBD', '#FF80A9', '#FF5993', '#FF0077', '#DC1F69', '#CC005F'];
-  var DARK_ON = {}; [C.lime, C.grey].concat(MAG.slice(0, 6)).forEach(function (c) { DARK_ON[c] = 1; });
+  var DARK_ON = {}; [C.lime, C.orange, C.grey].concat(MAG.slice(0, 6)).forEach(function (c) { DARK_ON[c] = 1; });
 
   /* ---------- design system colour tokens by name (tokens/color.json), for the colour="" attribute ----------
    * Any token can be passed by its path, for example color="lime.40" or color="color.pink.100". Keep in step with color.json. */
@@ -112,9 +112,9 @@
     var o = []; for (var i = 0; i < n; i++) o.push(MAG[Math.round(i * 8 / (n - 1))]); return o;
   }
   function seriesColors(n) {
-    if (n <= 4) return SETS[n].slice();
-    if (n > 9 && window.console) console.warn('gwi-chart: more than nine series is not covered by the colour rules. Group the smallest into "Other" or split into several charts.');
-    return magPick(Math.min(n, 9));
+    if (n <= 1) return [C.pink];
+    if (n > SEQ.length && window.console) console.warn('gwi-chart: more than six series is not covered by the colour rules, so the colours repeat. Group the smallest into "Other" or split into several charts.');
+    var o = []; for (var i = 0; i < n; i++) o.push(SEQ[i % SEQ.length]); return o;
   }
   function labelFill(c) { return c === C.grey ? C.muted : c; } /* grey bars get readable grey numbers */
   function textOn(c) { return DARK_ON[c] ? C.ink100 : C.white; }
@@ -622,12 +622,12 @@
   function donutRamp(n) { /* five or more segments: the pink ramp from the darkest step down, the biggest segment darkest */
     var out = [], i; for (i = 0; i < n; i++) out.push(MAG[n <= 7 ? 8 - i : Math.round(8 - i * 8 / (n - 1))]); return out;
   }
-  function donutText(c) { return (c === C.lime || c === C.grey || MAG.indexOf(c) > -1 && MAG.indexOf(c) < 4) ? C.ink100 : C.white; }
+  function donutText(c) { return (c === C.lime || c === C.orange || c === C.grey || MAG.indexOf(c) > -1 && MAG.indexOf(c) < 4) ? C.ink100 : C.white; }
 
   function buildDonut(d, S) {
     var W = S.W, A = S.anim, segs = d.cats.map(function (c, i) { return { name: c, v: Math.max(0, d.series[0].values[i]) }; }), n = segs.length;
     if (n > 9 && window.console) console.warn('gwi-chart: half donuts use nine segments or fewer. Group the rest into "Other".');
-    var cols = n <= 4 ? seriesColors(n) : donutRamp(Math.min(n, 9)), tot = segs.reduce(function (s, q) { return s + q.v; }, 0) || 1, tips = [], svg = '';
+    var cols = n <= 6 ? seriesColors(n) : donutRamp(Math.min(n, 9)), tot = segs.reduce(function (s, q) { return s + q.v; }, 0) || 1, tips = [], svg = '';
     var R = Math.max(110, W / 2 - 1), r = R * 0.29, cx = W / 2, cy = R + 2, rm = (R + r) / 2, lsz = clamp(R * 0.075, 15, 34);
     var th = Math.PI, arcs = '', labs = '', defs = '', P = function (rad, t) { return [cx + rad * Math.cos(t), cy - rad * Math.sin(t)]; };
     segs.forEach(function (sg, i) {
@@ -751,7 +751,7 @@
       for (i = nc - 2; i >= 0; i--) { cols[i].forEach(function (n) { n.b = bary(n, 'out'); }); cols[i].sort(function (a, b) { return a.b - b.b; }); stack(); }
     }
     /* colours: the first column takes the series colours, every other node follows its biggest source */
-    var first = cols[0].slice().sort(function (a, b) { return b.v - a.v; }), pal = first.length <= 4 ? seriesColors(first.length) : magPick(first.length).slice().reverse();
+    var first = cols[0].slice().sort(function (a, b) { return b.v - a.v; }), pal = first.length <= 6 ? seriesColors(first.length) : magPick(first.length).slice().reverse();
     first.forEach(function (n, k) { n.color = nodes[n.i].colorHint || pal[k]; });
     for (i = 1; i < nc; i++) cols[i].forEach(function (n) { var best = null; n.ins.forEach(function (l) { if (!best || l.v > best.v) best = l; }); n.color = n.colorHint || (best ? nodes[best.s].color : C.grey); });
     /* x positions */
@@ -942,7 +942,7 @@
    * Every colour token, the pink ramp, the corner radius, the fonts, the big-number and title sizes, a few gaps and the button shape
    * can be overridden from outside, per chart or site-wide:  <gwi-chart style="--gwi-pink:#0055FF;--gwi-radius:0px" ...>  (list in README-v1.2.md).
    * The stylesheet reads the variables directly. For colours drawn into the SVG, _tok() points each token colour at its variable. */
-  var TOKS = [[C.pink, '--gwi-pink'], [C.lime, '--gwi-lime'], [C.deep, '--gwi-deep'], [C.dlime, '--gwi-dlime'], [C.ink, '--gwi-ink'], [C.ink100, '--gwi-ink-strong'], [C.muted, '--gwi-muted'], [C.soft, '--gwi-soft'], [C.grid, '--gwi-grid'], [C.track, '--gwi-track'], [C.axis, '--gwi-axis'], [C.grey, '--gwi-grey']];
+  var TOKS = [[C.pink, '--gwi-pink'], [C.lime, '--gwi-lime'], [C.deep, '--gwi-deep'], [C.dlime, '--gwi-dlime'], [C.orange, '--gwi-orange'], [C.dorange, '--gwi-dorange'], [C.ink, '--gwi-ink'], [C.ink100, '--gwi-ink-strong'], [C.muted, '--gwi-muted'], [C.soft, '--gwi-soft'], [C.grid, '--gwi-grid'], [C.track, '--gwi-track'], [C.axis, '--gwi-axis'], [C.grey, '--gwi-grey']];
   MAG.forEach(function (h, i) { if (i !== 6) TOKS.push([h, '--gwi-ramp-' + (i + 1)]); }); /* step 7 of the ramp is the brand pink */
   var TOKMAP = {}, VARNAMES = ['--gwi-radius', '--gwi-font', '--gwi-number-font', '--gwi-title-size', '--gwi-title-weight', '--gwi-sub-size', '--gwi-stat-size', '--gwi-stat-label-size', '--gwi-stats-cols', '--gwi-stats-gap', '--gwi-stat-bar-height', '--gwi-head-gap', '--gwi-foot-gap', '--gwi-btn-radius', '--gwi-btn-height', '--gwi-max-width', '--gwi-bar-height'];
   TOKS.forEach(function (t) { TOKMAP[t[0].toUpperCase()] = t[1]; VARNAMES.push(t[1]); });
