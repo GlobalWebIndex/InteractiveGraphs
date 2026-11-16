@@ -15,6 +15,7 @@ It works in any HTML page or CMS, and its styles are sealed inside the tag so th
 |---|---|
 | `gwi-chart.standalone.js` | **The file to put on a website.** Fonts are built in, so this one file is all a page needs. |
 | `index.html` | The template page: every chart type with its embed code to copy. It loads `gwi-chart.standalone.js` from the same folder, so it works on its own, for example on GitHub Pages. |
+| `chart-types.json` | Machine-readable list of every chart type, read by the design system when it makes static charts for decks and reports. Types with no deck template slide (`deckTemplate: null`) are redrawn statically from this repo. Update it whenever a chart type is added, renamed or removed. |
 | `source/gwi-chart.js` | The same component without built in fonts, and the one we edit. Loads Ovo and Instrument Sans from `source/fonts/`. Not needed on a website. |
 | `source/flags/` | The design system's circular Light Mode flags (55 countries), one SVG per country. `build-standalone.py` builds them into `gwi-chart.standalone.js`, so a page needs no extra files. Not in `source/gwi-chart.js`: flags only work in the standalone file. When `Components/Flags/Circular/SVG/` changes in the design system, copy the Light Mode files here (without the "Light Mode - " prefix) and rebuild. |
 | `source/fonts/` | Instrument Sans and Ovo as woff2. Only needed with `source/gwi-chart.js` and for the build. |

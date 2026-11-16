@@ -1,0 +1,33 @@
+{
+  "_about": "Machine-readable map of every <gwi-chart> type, for the GWI design system (static charts in decks and reports). Keep in sync with the Chart types table in README.md. 'deckTemplate' is the matching template slide name in GWI-design-system-2026/Templates/Presentations/Presentation Template.html, or null when the deck has no slide for it yet. When deckTemplate is set, the deck slide wins. When it is null, redraw the chart statically from the rules in README.md ('The rules, built in') and the deck rules in the design system.",
+  "repo": "https://github.com/GlobalWebIndex/InteractiveGraphs",
+  "readme": "https://raw.githubusercontent.com/GlobalWebIndex/InteractiveGraphs/main/README.md",
+  "gallery": "https://raw.githubusercontent.com/GlobalWebIndex/InteractiveGraphs/main/index.html",
+  "types": [
+    { "type": "stat", "use": "One hero number with supporting tiles", "data": "value, label, tiles", "deckTemplate": "Lead with one big number" },
+    { "type": "stats", "use": "Several big numbers, each with a statement", "data": "stats[{value,label}]", "deckTemplate": null, "static": "Ovo numbers, small % beside each when unit is %. Two columns." },
+    { "type": "stat-bar", "use": "One tall bar stretching between big stats", "data": "stats, interval, notes", "deckTemplate": null, "static": "Animated on the web. In a deck show the stats side by side, not looped." },
+    { "type": "bar", "use": "Comparing values, one or several series", "data": "categories, series", "deckTemplate": "Compare with bars / Compare one group with bars / Compare groups with bars" },
+    { "type": "column", "use": "Comparing groups across statements", "data": "categories, series", "deckTemplate": "Compare groups with columns" },
+    { "type": "line", "use": "Change over time", "data": "categories, series", "deckTemplate": "Show change with lines" },
+    { "type": "area", "use": "Volume over time, one series", "data": "categories, one series", "deckTemplate": "Show volume with an area" },
+    { "type": "stacked-area", "use": "Parts of a total over time", "data": "categories, series", "deckTemplate": "Stack series with areas" },
+    { "type": "stacked-bar", "use": "Parts of a whole, horizontal", "data": "categories, series", "deckTemplate": "Show parts of a whole (stacked bar)" },
+    { "type": "stacked-column", "use": "Parts of a whole, vertical", "data": "categories, series", "deckTemplate": null, "static": "Same rules as the stacked bar template, turned to columns. Print values in the segments that fit." },
+    { "type": "heatmap", "use": "Spotting patterns", "data": "categories (rows), series (columns)", "deckTemplate": "Spot patterns with a heatmap" },
+    { "type": "treemap", "use": "Size and share", "data": "items", "deckTemplate": "Show size with a treemap" },
+    { "type": "half-donut", "use": "Share of a whole", "data": "items", "deckTemplate": "Show share with a half donut" },
+    { "type": "sankey", "use": "Flows between stages", "data": "links, optional stages", "deckTemplate": null, "static": "Show every value on the ribbons (no hover in a static chart). Columns come from the flows." },
+    { "type": "scatter", "use": "Two measures against each other", "data": "points (name,x,y,group), xLabel, yLabel", "deckTemplate": null, "static": "Label every dot, names must not overlap. Group colours follow series order." },
+    { "type": "dot-plot", "use": "Comparing values per category on one line", "data": "categories, series", "deckTemplate": null, "static": "Two or more series, a bar joins the dots. Print every value (hover is not available)." },
+    { "type": "slope", "use": "Change between two points in time", "data": "categories, series", "deckTemplate": null, "static": "Smooth curves, one line per category. Highlight one line and grey the rest." },
+    { "type": "inline-donut", "use": "Inline insight: one share of a total", "data": "value, label", "deckTemplate": null, "static": "Card with a big number, rule, statement and a thin ring. Defaults pink.100 on neutral.40 in a neutral.30 card." },
+    { "type": "inline-dots", "use": "Inline insight: one share of a total as 10 by 10 dots", "data": "value, label", "deckTemplate": null, "static": "100 dots, highlighted dots fill from the bottom right, right to left and upwards. Defaults lime.50 on neutral.40." }
+  ],
+  "staticRules": [
+    "Hover-only values on the web must be printed on the marks in a static chart.",
+    "Drop the buttons, 'View as table' and 'Download data'. Keep title, subtitle and key.",
+    "The source line, base and questions go in the slide or page footnote, as the Download image JPG does.",
+    "Colours, mark radius (6px), white gaps and the single % symbol follow the design system data viz rules."
+  ]
+}
