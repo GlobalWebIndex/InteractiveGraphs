@@ -1585,7 +1585,7 @@
   };
 
   window.GwiChart = window.GwiChart || {};
-  window.GwiChart.version = '1.3.0';
+  window.GwiChart.version = '1.7.0';
   window.GwiChart.cssVars = VARNAMES.slice();
   window.GwiChart.types = ['bar', 'column', 'line', 'area', 'stacked-area', 'stacked-bar', 'stacked-column', 'heatmap', 'treemap', 'sankey', 'scatter', 'dot-plot', 'slope', 'half-donut', 'inline-donut', 'inline-dots', 'stat', 'stats', 'stat-bar'];
   fontCSS();
